@@ -16,6 +16,7 @@ public class AllTask extends AppCompatActivity {
         backBtn.setOnClickListener(v -> {
             Intent intent = new Intent(AllTask.this,MainActivity.class);
             AllTask.this.startActivity(intent);
+
         });
     }
 }

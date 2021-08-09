@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">TaskMaster</string>
+    <string name="my_task">My Task</string>
+    <string name="add_task">ADD TASK</string>
+    <string name="mytask">MYTASK</string>
+    <string name="add_taskAc">Add Task</string>
+    <string name="task_title">Task Title:</string>
+    <string name="task_title_txt">Task Title :</string>
+    <string name="task_description_edit">Task Description</string>
+    <string name="task_description_txt">Task Description :</string>
+    <string name="total_task">Total Task :</string>
+    <string name="all_task_txt">All Task</string>
+    <string name="all_task_image">All_TASK_IMAGE</string>
+    <string name="backBtn">Back</string>
+    <string name="add_task_btn">Add Task</string>
+    <string name="total_no">Total</string>
+</resources>

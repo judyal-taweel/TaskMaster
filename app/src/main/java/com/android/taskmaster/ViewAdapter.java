@@ -53,8 +53,8 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>{
         public ViewHolder(@NonNull View itemView,OnTaskItemClickListener listener) {
             super(itemView);
 
-        title=itemView.findViewById(R.id.task_title_name);
-        body=itemView.findViewById(R.id.body);
+            title=itemView.findViewById(R.id.task_title_name);
+            body=itemView.findViewById(R.id.body);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

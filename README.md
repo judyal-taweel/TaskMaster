@@ -31,3 +31,5 @@
 ![](Screenshot_20210815-180911.png)
 ![](Screenshot_20210815-182350.png)
 ![](Screenshot_20210817_210327.png)
+![](dynamoDB.PNG)
+![](dynamoDB2.jpg)

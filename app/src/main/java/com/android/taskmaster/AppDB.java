@@ -3,7 +3,7 @@ package com.android.taskmaster;
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
 //@room.schemaLocation
-@Database(entities = {TaskItem.class}, version = 1)
+@Database(entities = {TaskItem.class}, version = 1, exportSchema = false)
 public abstract class AppDB extends RoomDatabase {
     public abstract TaskDao taskDao();
 }

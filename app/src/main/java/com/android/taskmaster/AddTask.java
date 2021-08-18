@@ -5,6 +5,7 @@ import androidx.room.Room;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -12,6 +13,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.amplifyframework.AmplifyException;
+import com.amplifyframework.api.aws.AWSApiPlugin;
+import com.amplifyframework.api.graphql.model.ModelMutation;
+import com.amplifyframework.core.Amplify;
+import com.amplifyframework.datastore.AWSDataStorePlugin;
 
 public class AddTask extends AppCompatActivity {
     public static final String TASK = "task-container";
@@ -22,6 +29,20 @@ public class AddTask extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
+
+        try {
+            Amplify.addPlugin(new AWSApiPlugin());
+            Amplify.addPlugin(new AWSDataStorePlugin());
+            Amplify.configure(getApplicationContext());
+            Log.i("Tutorial", "Initialized Amplify");
+        } catch (AmplifyException failure) {
+            Log.e("Tutorial", "Could not initialize Amplify", failure);
+        }
+
+
+
+
+
 
         AppDB database = Room.databaseBuilder(getApplicationContext(), AppDB.class, TASK)
                 .allowMainThreadQueries().build();
@@ -62,6 +83,19 @@ public class AddTask extends AppCompatActivity {
                 TaskItem taskItem = new TaskItem(title,body);
                 taskItem.setState(taskState);
                 taskDao.insertOneTask(taskItem);
+
+                com.amplifyframework.datastore.generated.model.TaskItem taskItem1= com.amplifyframework.datastore.generated.model.TaskItem.builder()
+                        .title(title)
+                        .body(body)
+                        .state(taskState)
+                        .build();
+
+                Amplify.API.mutate(ModelMutation.create(taskItem1),
+                        response -> Log.i("MyAmplify", "Added" + response.getData()),
+                        error -> Log.e("MyAmplifyApp", "Create failed", error));
+
+
+
 
 
                 Toast.makeText(AddTask.this, "Submitted!!", Toast.LENGTH_SHORT).show();

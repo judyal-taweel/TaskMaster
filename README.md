@@ -9,6 +9,11 @@
 * Add Task Activity : allow you to add a new task with description
 * All Task Activity : show all your task
 * Setting Page: you can add your username.
+* ## now you can save yor tasks
+
+# awsAmazon
+## Amplify
+> Amplify initiated Successfully
 
 
 # give it a look :
@@ -19,8 +24,10 @@
 ![](taskB.jpg)
 ![](taskC.jpg)
 ![](taskD.jpg)
-
-
-
-
-
+![](SavedTask.png)
+![](DetailSavedTask.png)
+![](AddTask.png)
+![](Screenshot_20210815-180606.png)
+![](Screenshot_20210815-180911.png)
+![](Screenshot_20210815-182350.png)
+![](Screenshot_20210817_210327.png)

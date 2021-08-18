@@ -12,7 +12,7 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
@@ -41,6 +41,10 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.4.0'
     androidTestImplementation 'androidx.test:runner:1.4.0'
 
+    implementation 'com.amplifyframework:aws-api:1.24.0'
+    implementation 'com.amplifyframework:aws-datastore:1.24.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
+
     androidTestImplementation("com.android.support.test.espresso:espresso-contrib:3.0.2"){
         exclude group:'com.android,support',module: 'appcompat'
         exclude group:'com.android,support',module: 'support-v4'
@@ -48,6 +52,8 @@ dependencies {
         exclude group:'com.android,support',module: 'design'
         exclude module: 'support-annotations'
         exclude module: 'recyclerview-v7'
+
+
 
     }
     // room dependencies

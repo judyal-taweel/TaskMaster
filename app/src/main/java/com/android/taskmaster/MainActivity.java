@@ -2,28 +2,34 @@ package com.android.taskmaster;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ListView;
-import android.widget.TextView;
+import com.amplifyframework.AmplifyException;
+import com.amplifyframework.api.aws.AWSApiPlugin;
+import com.amplifyframework.api.graphql.model.ModelQuery;
+import com.amplifyframework.core.Amplify;
+import com.amplifyframework.datastore.AWSDataStorePlugin;
+import com.amplifyframework.datastore.generated.model.Todo;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     ViewAdapter viewAdapter;
     private List<TaskItem> taskList;
+    private List<com.amplifyframework.datastore.generated.model.TaskItem> commingList= TaskManager.getInstance().getData();
 
     public static final String TITLE = "title";
     public static final String BODY = "body";
@@ -43,26 +49,36 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        AppDB db = Room.databaseBuilder(getApplicationContext(),
-                AppDB.class, AddTask.TASK).allowMainThreadQueries().build();
+        try {
+            Amplify.addPlugin(new AWSApiPlugin());
+            Amplify.addPlugin(new AWSDataStorePlugin());
+            Amplify.configure(getApplicationContext());
+            Log.i("Tutorial", "Initialized Amplify");
+        } catch (AmplifyException failure) {
+            Log.e("Tutorial", "Could not initialize Amplify", failure);
+        }
 
-        TaskDao taskDao = db.taskDao();
-        taskList = taskDao.findAll();
 
+//        AppDB db = Room.databaseBuilder(getApplicationContext(),
+//                AppDB.class, AddTask.TASK).allowMainThreadQueries().build();
 
+//        TaskDao taskDao = db.taskDao();
+//        taskList = taskDao.findAll();
+
+        getTasksFromAPI();
 
         RecyclerView taskRecycleView = findViewById(R.id.list);
 //        Matcher<View> strings = withId(R.id.list);
         String strings = taskRecycleView.toString();
         System.out.println("mmmmmmmmmmmmmmmmmmmmmmmmmmmmm"+strings);
         Log.i("MM", "onCreate: "+strings);
-        viewAdapter = new ViewAdapter(taskList, new ViewAdapter.OnTaskItemClickListener() {
+        viewAdapter = new ViewAdapter(commingList, new ViewAdapter.OnTaskItemClickListener() {
             @Override
             public void onTaskClicked(int position) {
                 Intent detailsPage = new Intent(getApplicationContext(), TaskDetailPage.class);
-                detailsPage.putExtra(TITLE,taskList.get(position).getTitle());
-                detailsPage.putExtra(BODY,taskList.get(position).getBody());
-                detailsPage.putExtra(STATE,taskList.get(position).getState());
+                detailsPage.putExtra(TITLE,commingList.get(position).getTitle());
+                detailsPage.putExtra(BODY,commingList.get(position).getBody());
+                detailsPage.putExtra(STATE,commingList.get(position).getState());
                 startActivity(detailsPage);
 
             }
@@ -91,30 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-//        taskList = new ArrayList<>();
-//        taskList.add(new TaskItem("Task A","Body A","New"));
-//        taskList.add(new TaskItem("Task B","Body B"," In Progres"));
-//        taskList.add(new TaskItem("Task C","Body C","Assign"));
-//        taskList.add(new TaskItem("Task D","Body D","Completed"));
-//        taskList.add(new TaskItem("Task E","Body E","New"));
-//        taskList.add(new TaskItem("Task F","Body F"," In Progres"));
-//        taskList.add(new TaskItem("Task I","Body I","New"));
-//        taskList.add(new TaskItem("Task J","Body J","Assign"));
-//        taskList.add(new TaskItem("Task K","Body K","Completed"));
-//        taskList.add(new TaskItem("Task L","Body L"," In Progres"));
-//        taskList.add(new TaskItem("Task M","Body M","New"));
 
-//       viewAdapter = new ViewAdapter(taskList, new ViewAdapter.OnTaskItemClickListener() {
-//           @Override
-//           public void onTaskClicked(int position) {
-//               Intent detailsPage= new Intent(getApplicationContext(),TaskDetailPage.class);
-//               detailsPage.putExtra(TITLE , taskList.get(position).getTitle());
-//               detailsPage.putExtra(BODY , taskList.get(position).getBody());
-//               detailsPage.putExtra(STATE , taskList.get(position).getState());
-//               startActivity(detailsPage);
-//
-//           }
-//       });
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(
                 this,
                 LinearLayoutManager.VERTICAL,
@@ -124,6 +117,20 @@ public class MainActivity extends AppCompatActivity {
         taskRecycleView.setAdapter(viewAdapter);
     }
 
+    private void dataSetChanged(){viewAdapter.notifyDataSetChanged();}
+
+    private void getTasksFromAPI(){
+        Amplify.API.query(ModelQuery.list(com.amplifyframework.datastore.generated.model.TaskItem.class),
+                response ->{
+
+                    for(com.amplifyframework.datastore.generated.model.TaskItem item : response.getData()){
+                        commingList.add(item);
+                        Log.i("coming","on create : the item is =>"+item.getTitle());
+                    }
+                },
+                error -> Log.e("error","onCreate faild"+error.toString())
+        );
+    }
 
 
 

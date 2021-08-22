@@ -15,11 +15,15 @@ public class TaskDetailPage extends AppCompatActivity {
         TextView title = findViewById(R.id.textView7);
         TextView body = findViewById(R.id.lorem_ipsum);
         TextView state = findViewById(R.id.state);
+        TextView team = findViewById(R.id.team);
         String titleName = comingIntent.getExtras().getString(MainActivity.TITLE);
         String bodytask = comingIntent.getExtras().getString(MainActivity.BODY);
         String statetask = comingIntent.getExtras().getString(MainActivity.STATE);
+        String teamtask = comingIntent.getExtras().getString(MainActivity.TEAM);
+
         title.setText(titleName);
         body.setText(bodytask);
         state.setText(statetask);
+        team.setText(teamtask);
     }
 }

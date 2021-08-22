@@ -10,7 +10,6 @@
         android:id="@+id/textView3"
         android:layout_width="144dp"
         android:layout_height="36dp"
-        android:layout_marginTop="86dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="2dp"
         android:labelFor="@id/task_title_input"
@@ -25,9 +24,10 @@
         android:layout_marginBottom="40dp"
         android:autofillHints="@string/task_title_txt"
         android:hint="@string/task_title"
-        android:inputType="text"
 
-        tools:ignore="LabelFor" />
+        android:inputType="text"
+        android:minHeight="48dp"
+        tools:ignore="LabelFor,DuplicateSpeakableTextCheck,TextContrastCheck" />
 
     <TextView
         android:id="@+id/textView4"
@@ -43,14 +43,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="9dp"
-        android:layout_marginBottom="30dp"
         android:autofillHints="@string/task_description_edit"
         android:hint="@string/task_description_edit"
+
         android:inputType="text"
 
-        tools:ignore="LabelFor"
-
-        />
+        android:minHeight="48dp"
+        tools:ignore="LabelFor,DuplicateSpeakableTextCheck,DuplicateSpeakableTextCheck,TextContrastCheck" />
 
     <TextView
         android:id="@+id/textView"
@@ -59,19 +58,59 @@
         android:text="@string/task_state1"
         android:textSize="25sp" />
 
-    <Spinner
+<!--    <EditText-->
+<!--        android:id="@+id/state"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="9dp"-->
+<!--        android:hint="@string/task_description_edit"-->
+
+<!--        android:inputType="text"-->
+
+<!--        android:minHeight="48dp"-->
+<!--        tools:ignore="LabelFor,DuplicateSpeakableTextCheck,DuplicateSpeakableTextCheck,TextContrastCheck" />-->
+
+
+        <Spinner
         android:id="@+id/spinner"
         android:layout_width="match_parent"
         android:layout_height="50dp"
 
-        />
+        tools:ignore="SpeakableTextPresentCheck" />
+    <TextView
+        android:id="@+id/teamtext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/your_team"
+        android:textSize="25sp" />
+
+<!--    <EditText-->
+<!--        android:id="@+id/team"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="9dp"-->
+<!--        android:autofillHints="@string/your_team"-->
+<!--        android:hint="@string/task_description_edit"-->
+
+<!--        android:inputType="text"-->
+
+<!--        android:minHeight="48dp"-->
+<!--        tools:ignore="LabelFor,DuplicateSpeakableTextCheck,DuplicateSpeakableTextCheck,TextContrastCheck" />-->
+
+
+
+        <Spinner
+        android:id="@+id/teamspinner"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <Button
         android:id="@+id/addTaskBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="40dp"
         android:layout_marginEnd="30dp"
         android:text="@string/add_task_btn" />
 

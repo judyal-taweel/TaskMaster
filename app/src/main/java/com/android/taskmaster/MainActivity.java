@@ -1,8 +1,12 @@
 package com.android.taskmaster;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,10 +25,12 @@ import com.amplifyframework.api.aws.AWSApiPlugin;
 import com.amplifyframework.api.graphql.model.ModelQuery;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.AWSDataStorePlugin;
+import com.amplifyframework.datastore.generated.model.Team;
 import com.amplifyframework.datastore.generated.model.Todo;
 
 
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     public static final String TITLE = "title";
     public static final String BODY = "body";
     public static final String STATE = "state";
+    public static final String TEAM = "team";
+    Handler handler;
+    RecyclerView taskRecycleView;
     @Override
     protected void onResume (){
         super.onResume();
@@ -47,6 +57,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        handler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public boolean handleMessage(@NonNull Message msg) {
+                Objects.requireNonNull(taskRecycleView.getAdapter()).notifyDataSetChanged();
+                return false;
+            }
+        });
 
 
         try {
@@ -66,8 +85,11 @@ public class MainActivity extends AppCompatActivity {
 //        taskList = taskDao.findAll();
 
         getTasksFromAPI();
+//        commingList.add(new com.amplifyframework.datastore.generated.model.TaskItem("12","title A","body A","new",new Team("1","team A")));
+//        commingList.add(new com.amplifyframework.datastore.generated.model.TaskItem("12","title A","body A","new",new Team("1","team A")));
+//        commingList.add(new com.amplifyframework.datastore.generated.model.TaskItem("12","title A","body A","new",new Team("1","team A")));
 
-        RecyclerView taskRecycleView = findViewById(R.id.list);
+         taskRecycleView = findViewById(R.id.list);
 //        Matcher<View> strings = withId(R.id.list);
         String strings = taskRecycleView.toString();
         System.out.println("mmmmmmmmmmmmmmmmmmmmmmmmmmmmm"+strings);
@@ -79,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
                 detailsPage.putExtra(TITLE,commingList.get(position).getTitle());
                 detailsPage.putExtra(BODY,commingList.get(position).getBody());
                 detailsPage.putExtra(STATE,commingList.get(position).getState());
+                detailsPage.putExtra(TEAM,commingList.get(position).getTeam().getName());
                 startActivity(detailsPage);
 
             }
@@ -125,14 +148,12 @@ public class MainActivity extends AppCompatActivity {
 
                     for(com.amplifyframework.datastore.generated.model.TaskItem item : response.getData()){
                         commingList.add(item);
-                        Log.i("coming","on create : the item is =>"+item.getTitle());
+                        Log.i("coming","on create : ------------ =>"+item.getTitle());
                     }
+                    handler.sendEmptyMessage(1);
                 },
                 error -> Log.e("error","onCreate faild"+error.toString())
         );
     }
-
-
-
 
 }

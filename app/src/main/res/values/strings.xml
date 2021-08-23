@@ -50,6 +50,7 @@
     <string name="sign_in">Sign In</string>
     <string name="create_a_new_acount">Create a new Acount!</string>
     <string name="unique_andro_code">Unique Andro Code</string>
+    <string name="log_out">Log Out</string>
 
 
     <string-array name="task_state_menu">

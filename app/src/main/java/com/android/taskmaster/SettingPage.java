@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -12,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.amplifyframework.core.Amplify;
 
 public class SettingPage extends AppCompatActivity {
 
@@ -62,5 +65,19 @@ public class SettingPage extends AppCompatActivity {
             Intent intent = new Intent(SettingPage.this,MainActivity.class);
             startActivity(intent);
         });
+
+        Button logOut = SettingPage.this.findViewById(R.id.log_out);
+        logOut.setOnClickListener(v -> {
+            Intent logout = new Intent(getApplicationContext(),LogIn.class);
+            Amplify.Auth.signOut(
+                    () -> {
+                        Log.i("AuthQuickstart", "Signed out successfully");
+                        SettingPage.this.startActivity(logout);
+                    },
+                    error -> Log.e("AuthQuickstart", error.toString())
+            );
+
+        });
+
     }
 }

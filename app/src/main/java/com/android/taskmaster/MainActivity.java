@@ -23,12 +23,15 @@ import androidx.room.Room;
 import com.amplifyframework.AmplifyException;
 import com.amplifyframework.api.aws.AWSApiPlugin;
 import com.amplifyframework.api.graphql.model.ModelQuery;
+import com.amplifyframework.auth.AuthUser;
+import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.AWSDataStorePlugin;
 import com.amplifyframework.datastore.generated.model.Team;
 import com.amplifyframework.datastore.generated.model.Todo;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,6 +45,12 @@ public class MainActivity extends AppCompatActivity {
     public static final String BODY = "body";
     public static final String STATE = "state";
     public static final String TEAM = "team";
+
+    private static final String TAG = "MainActivity";
+
+    int count=1;
+    String teamId;
+    String team;
     Handler handler;
     RecyclerView taskRecycleView;
     @Override
@@ -50,13 +59,28 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String username = sharedPreferences.getString("Username","go set your info in setting !!");
         TextView usernameView = findViewById(R.id.Username_main);
+        team=sharedPreferences.getString("team","Team A");
         usernameView.setText(username);
+
+
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        try {
+            Amplify.addPlugin(new AWSApiPlugin());
+            Amplify.addPlugin(new AWSDataStorePlugin());
+            Amplify.addPlugin(new AWSCognitoAuthPlugin());
+            Amplify.configure(getApplicationContext());
+            Log.i("Tutorial", "Initialized Amplify");
+        } catch (AmplifyException failure) {
+            Log.e("Tutorial", "Could not initialize Amplify", failure);
+        }
+
 
         handler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
             @SuppressLint("NotifyDataSetChanged")
@@ -66,56 +90,30 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+//commingList=new ArrayList<>();
 
-
-        try {
-            Amplify.addPlugin(new AWSApiPlugin());
-            Amplify.addPlugin(new AWSDataStorePlugin());
-            Amplify.configure(getApplicationContext());
-            Log.i("Tutorial", "Initialized Amplify");
-        } catch (AmplifyException failure) {
-            Log.e("Tutorial", "Could not initialize Amplify", failure);
-        }
-
+        getTeamFromAPI();
 
 //        AppDB db = Room.databaseBuilder(getApplicationContext(),
 //                AppDB.class, AddTask.TASK).allowMainThreadQueries().build();
 
 //        TaskDao taskDao = db.taskDao();
 //        taskList = taskDao.findAll();
-
-        getTasksFromAPI();
 //        commingList.add(new com.amplifyframework.datastore.generated.model.TaskItem("12","title A","body A","new",new Team("1","team A")));
 //        commingList.add(new com.amplifyframework.datastore.generated.model.TaskItem("12","title A","body A","new",new Team("1","team A")));
 //        commingList.add(new com.amplifyframework.datastore.generated.model.TaskItem("12","title A","body A","new",new Team("1","team A")));
 
-         taskRecycleView = findViewById(R.id.list);
-//        Matcher<View> strings = withId(R.id.list);
-        String strings = taskRecycleView.toString();
-        System.out.println("mmmmmmmmmmmmmmmmmmmmmmmmmmmmm"+strings);
-        Log.i("MM", "onCreate: "+strings);
-        viewAdapter = new ViewAdapter(commingList, new ViewAdapter.OnTaskItemClickListener() {
-            @Override
-            public void onTaskClicked(int position) {
-                Intent detailsPage = new Intent(getApplicationContext(), TaskDetailPage.class);
-                detailsPage.putExtra(TITLE,commingList.get(position).getTitle());
-                detailsPage.putExtra(BODY,commingList.get(position).getBody());
-                detailsPage.putExtra(STATE,commingList.get(position).getState());
-                detailsPage.putExtra(TEAM,commingList.get(position).getTeam().getName());
-                startActivity(detailsPage);
 
-            }
-        });
         ImageButton menuBtn = findViewById(R.id.imageButton);
         menuBtn.setOnClickListener(v -> {
-            Intent menuIntent = new Intent(MainActivity.this,SettingPage.class);
+            Intent menuIntent = new Intent(MainActivity.this, SettingPage.class);
             startActivity(menuIntent);
         });
         Button allTaskBtn = MainActivity.this.findViewById(R.id.allTaskBtn);
         allTaskBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,AllTask.class);
+                Intent intent = new Intent(MainActivity.this, AllTask.class);
                 MainActivity.this.startActivity(intent);
             }
         });
@@ -123,14 +121,41 @@ public class MainActivity extends AppCompatActivity {
         addTaskBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,AddTask.class);
+                Intent intent = new Intent(MainActivity.this, AddTask.class);
                 MainActivity.this.startActivity(intent);
             }
         });
 
 
+    }
 
 
+    private void dataSetChanged(){viewAdapter.notifyDataSetChanged();}
+
+    private void getTeamFromAPI(){
+        Amplify.API.query(ModelQuery.list(Team.class,Team.NAME.eq("Team B")),
+                response ->{
+
+                    for(Team item : response.getData()){
+
+                     commingList=item.getTaskitem();
+                        Log.i("coming","on create : ------------ =>"+item.getTaskitem());
+                    }
+    runOnUiThread(()-> {
+    taskRecycleView = findViewById(R.id.list);
+    viewAdapter = new ViewAdapter(commingList, new ViewAdapter.OnTaskItemClickListener() {
+        @Override
+        public void onTaskClicked(int position) {
+            Intent detailsPage = new Intent(getApplicationContext(), TaskDetailPage.class);
+            detailsPage.putExtra(TITLE,commingList.get(position).getTitle());
+            detailsPage.putExtra(BODY,commingList.get(position).getBody());
+            detailsPage.putExtra(STATE,commingList.get(position).getState());
+            detailsPage.putExtra(TEAM,commingList.get(position).getTeam().getName());
+//                team=commingList.get(position).getTeam().getId();
+            startActivity(detailsPage);
+
+        }
+    });
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(
                 this,
                 LinearLayoutManager.VERTICAL,
@@ -138,22 +163,28 @@ public class MainActivity extends AppCompatActivity {
 
         taskRecycleView.setLayoutManager(linearLayoutManager);
         taskRecycleView.setAdapter(viewAdapter);
-    }
 
-    private void dataSetChanged(){viewAdapter.notifyDataSetChanged();}
-
-    private void getTasksFromAPI(){
-        Amplify.API.query(ModelQuery.list(com.amplifyframework.datastore.generated.model.TaskItem.class),
-                response ->{
-
-                    for(com.amplifyframework.datastore.generated.model.TaskItem item : response.getData()){
-                        commingList.add(item);
-                        Log.i("coming","on create : ------------ =>"+item.getTitle());
-                    }
-                    handler.sendEmptyMessage(1);
+});
                 },
                 error -> Log.e("error","onCreate faild"+error.toString())
         );
     }
+
+//    private void getTasksFromAPI(){
+//        Amplify.API.query(ModelQuery.list(com.amplifyframework.datastore.generated.model.TaskItem.class, com.amplifyframework.datastore.generated.model.TaskItem.TEAM.eq(teamId)),
+//                response ->{
+//
+//                    for(com.amplifyframework.datastore.generated.model.TaskItem item : response.getData()){
+//                        commingList.add(item);
+//                        Log.i("coming","on create : ------------ =>"+item);
+//                    }
+//                    handler.sendEmptyMessage(1);
+//                },
+//                error -> Log.e("error","onCreate faild"+error.toString())
+//        );
+//    }
+
+
+
 
 }

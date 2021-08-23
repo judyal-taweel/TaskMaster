@@ -15,6 +15,12 @@
 ## Amplify
 > Amplify initiated Successfully
 
+## Succefully connected Graphql and save in api
+
+## now you can add your task and save it cloudly on the api and restore it
+
+## connected with *Cognito @Auth* to secure your account
+
 
 # give it a look :
 

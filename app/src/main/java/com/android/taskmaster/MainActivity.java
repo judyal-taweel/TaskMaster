@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-
         try {
             Amplify.addPlugin(new AWSApiPlugin());
             Amplify.addPlugin(new AWSDataStorePlugin());
@@ -104,34 +103,17 @@ public class MainActivity extends AppCompatActivity {
 //        commingList.add(new com.amplifyframework.datastore.generated.model.TaskItem("12","title A","body A","new",new Team("1","team A")));
 //        commingList.add(new com.amplifyframework.datastore.generated.model.TaskItem("12","title A","body A","new",new Team("1","team A")));
 
-         taskRecycleView = findViewById(R.id.list);
-//        Matcher<View> strings = withId(R.id.list);
-        String strings = taskRecycleView.toString();
-        System.out.println("mmmmmmmmmmmmmmmmmmmmmmmmmmmmm"+strings);
-        Log.i("MM", "onCreate: "+strings);
-        viewAdapter = new ViewAdapter(commingList, new ViewAdapter.OnTaskItemClickListener() {
-            @Override
-            public void onTaskClicked(int position) {
-                Intent detailsPage = new Intent(getApplicationContext(), TaskDetailPage.class);
-                detailsPage.putExtra(TITLE,commingList.get(position).getTitle());
-                detailsPage.putExtra(BODY,commingList.get(position).getBody());
-                detailsPage.putExtra(STATE,commingList.get(position).getState());
-                detailsPage.putExtra(TEAM,commingList.get(position).getTeam().getName());
-//                team=commingList.get(position).getTeam().getId();
-                startActivity(detailsPage);
 
-            }
-        });
         ImageButton menuBtn = findViewById(R.id.imageButton);
         menuBtn.setOnClickListener(v -> {
-            Intent menuIntent = new Intent(MainActivity.this,SettingPage.class);
+            Intent menuIntent = new Intent(MainActivity.this, SettingPage.class);
             startActivity(menuIntent);
         });
         Button allTaskBtn = MainActivity.this.findViewById(R.id.allTaskBtn);
         allTaskBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,AllTask.class);
+                Intent intent = new Intent(MainActivity.this, AllTask.class);
                 MainActivity.this.startActivity(intent);
             }
         });
@@ -139,26 +121,19 @@ public class MainActivity extends AppCompatActivity {
         addTaskBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,AddTask.class);
+                Intent intent = new Intent(MainActivity.this, AddTask.class);
                 MainActivity.this.startActivity(intent);
             }
         });
 
 
-
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(
-                this,
-                LinearLayoutManager.VERTICAL,
-                false);
-
-        taskRecycleView.setLayoutManager(linearLayoutManager);
-        taskRecycleView.setAdapter(viewAdapter);
     }
+
+
     private void dataSetChanged(){viewAdapter.notifyDataSetChanged();}
 
     private void getTeamFromAPI(){
-        Amplify.API.query(ModelQuery.list(Team.class,Team.NAME.eq(team)),
+        Amplify.API.query(ModelQuery.list(Team.class,Team.NAME.eq("Team B")),
                 response ->{
 
                     for(Team item : response.getData()){
@@ -166,8 +141,30 @@ public class MainActivity extends AppCompatActivity {
                      commingList=item.getTaskitem();
                         Log.i("coming","on create : ------------ =>"+item.getTaskitem());
                     }
-                    handler.sendEmptyMessage(1);
+    runOnUiThread(()-> {
+    taskRecycleView = findViewById(R.id.list);
+    viewAdapter = new ViewAdapter(commingList, new ViewAdapter.OnTaskItemClickListener() {
+        @Override
+        public void onTaskClicked(int position) {
+            Intent detailsPage = new Intent(getApplicationContext(), TaskDetailPage.class);
+            detailsPage.putExtra(TITLE,commingList.get(position).getTitle());
+            detailsPage.putExtra(BODY,commingList.get(position).getBody());
+            detailsPage.putExtra(STATE,commingList.get(position).getState());
+            detailsPage.putExtra(TEAM,commingList.get(position).getTeam().getName());
+//                team=commingList.get(position).getTeam().getId();
+            startActivity(detailsPage);
 
+        }
+    });
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(
+                this,
+                LinearLayoutManager.VERTICAL,
+                false);
+
+        taskRecycleView.setLayoutManager(linearLayoutManager);
+        taskRecycleView.setAdapter(viewAdapter);
+
+});
                 },
                 error -> Log.e("error","onCreate faild"+error.toString())
         );

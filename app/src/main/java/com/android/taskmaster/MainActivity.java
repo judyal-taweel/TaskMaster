@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+
         handler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
